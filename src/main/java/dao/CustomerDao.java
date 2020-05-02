@@ -1,6 +1,8 @@
 package dao;
 
 import java.sql.*;
+import java.lang.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +34,9 @@ public class CustomerDao {
 		for (int i = 0; i < 10; i++) {
 			Customer customer = new Customer();
 			customer.setAccountNo(111);
-			customer.setAddress("123 Success Street");
+			customer.setAddress("123 Sucfcess Street");
 			customer.setLastName("Lu");
-			customer.setFirstName("Shiyong");
+			customer.setFirstName("Shiyfong");
 			customer.setCity("Stony Brook");
 			customer.setState("NY");
 			customer.setEmail("shiyong@cs.sunysb.edu");
@@ -64,38 +66,65 @@ public class CustomerDao {
 		// Customer ID = Account Number
 		customer.setAccountNo(111);
 		customer.setLastName("Lu");
-		customer.setFirstName("Shiyong");
+		customer.setFirstName("Shiyfong");
 		/*Sample data ends*/
 	
 		return customer;
 		
 	}
 
-	public List<Customer> getCustomerMailingList() {
+	public List<Customer> getCustomerMailingList() throws SQLException {
 
 		/*
 		 * This method fetches the all customer mailing details and returns it
 		 * The students code to fetch data from the database will be written here
 		 * Each customer record is required to be encapsulated as a "Customer" class object and added to the "customers" List
 		 */
-
-		
 		List<Customer> customers = new ArrayList<Customer>();
-		
+//		try {
+//			Class.forName("com.mysql.jdbc.Driver");
+//			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cse305","root","qnzMxS7qAB^@qm");
+//			Statement st = con.createStatement();
+//			
+//			/*
+//		 		SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode 
+//				FROM Customer C, Person P
+//				WHERE C.Id = P.Id
+//			 */
+//			
+//			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode" + 
+//					" FROM Customer C, Person P" + 
+//					" WHERE C.Id = P.Id");
+//			
+//			while(rs.next()) {
+//				Customer customer = new Customer();
+//				customer.setAddress(rs.getString("Address"));
+//				customer.setLastName(rs.getString("LastName"));
+//				customer.setFirstName(rs.getString("FirstName"));
+//				customer.setCity(rs.getString("City"));
+//				customer.setState(rs.getString("State"));
+//				customer.setEmail(rs.getString("Email"));
+//				customer.setZipCode(rs.getInt("ZipCode"));
+//				customers.add(customer);
+//			}
+//			
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		/*Sample data begins*/
 		for (int i = 0; i < 10; i++) {
 			Customer customer = new Customer();
 			customer.setAddress("123 Success Street");
 			customer.setLastName("Lu");
 			customer.setFirstName("Shiyong");
-			customer.setCity("Stony Brook");
+			customer.setCity("Stook");
 			customer.setState("NY");
 			customer.setEmail("shiyong@cs.sunysb.edu");
 			customer.setZipCode(11790);
 			customers.add(customer);			
 		}
 		/*Sample data ends*/
-		
 		return customers;
 	}
 
@@ -112,7 +141,7 @@ public class CustomerDao {
 		Customer customer = new Customer();
 		customer.setAccountNo(111);
 		customer.setAddress("123 Success Street");
-		customer.setLastName("Lu");
+		customer.setLastName("Lut");
 		customer.setFirstName("Shiyong");
 		customer.setCity("Stony Brook");
 		customer.setState("NY");
@@ -161,7 +190,20 @@ public class CustomerDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database insertion of the customer details and return "success" or "failure" based on result of the database insertion.
 		 */
-		
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cse305","root","qnzMxS7qAB^@qm");
+			Statement st = con.createStatement();
+			
+			/*
+			 * INSERT INTO Person VALUES (5, 'Jenna', 'Smith', '200 Stony Brook Rd', 'Stony Brook', 'New York', 11790);
+			 * INSERT INTO Customer VALUE(5, 1011, '1234567812345678', 'jenna@smith.com', '2014-04-01 16:40:40', 1);
+			 */
+			ResultSet rs = st.executeQuery("INSERT INTO Person VALUES (");
+		}
+		catch(Exception e) {
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/

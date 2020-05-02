@@ -82,10 +82,9 @@ public class CustomerDao {
 		 */
 		List<Customer> customers = new ArrayList<Customer>();
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cse305","root","qnzMxS7qAB^@qm");
+			
 			// root = username, qnzMxS7qAB^@qm = password
-			Statement st = con.createStatement();
+			Statement st = Connections.generateStatement();
 			
 			/*
 		 		SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode 

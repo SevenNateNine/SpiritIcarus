@@ -29,24 +29,31 @@ public class CustomerDao {
 		 * The students code to fetch data from the database will be written here
 		 * Each record is required to be encapsulated as a "Customer" class object and added to the "customers" List
 		 */
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Customer customer = new Customer();
-			customer.setAccountNo(111);
-			customer.setAddress("123 Sucfcess Street");
-			customer.setLastName("Lu");
-			customer.setFirstName("Shiyfong");
-			customer.setCity("Stony Brook");
-			customer.setState("NY");
-			customer.setEmail("shiyong@cs.sunysb.edu");
-			customer.setZipCode(11790);
-//			customer.setTelephone("5166328959");
-			customer.setCreditCard("1234567812345678");
-			customer.setRating(1);
-			customers.add(customer);			
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("SELECT C.AccountNo, C.Email, C.CreditCardNo, C.Rating," +
+					" P.FirstName, P.LastName,  P.Address, P.City, P.State, P.ZipCode" + 
+					" FROM Customer C, Person P" + 
+					" WHERE C.Id = P.Id");
+			
+			while(rs.next()) {
+				Customer customer = new Customer();
+				customer.setAccountNo(rs.getInt("AccountNo"));
+				customer.setAddress(rs.getString("Address"));
+				customer.setLastName(rs.getString("LastName"));
+				customer.setFirstName(rs.getString("FirstName"));
+				customer.setCity(rs.getString("City"));
+				customer.setState(rs.getString("State"));
+				customer.setEmail(rs.getString("Email"));
+				customer.setZipCode(rs.getInt("ZipCode"));
+				customer.setCreditCard(rs.getString("CreditCardNo"));
+				customer.setRating(rs.getInt("Rating"));
+				customers.add(customer);
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
 		}
-		/*Sample data ends*/
 		
 		return customers;
 	}
@@ -81,17 +88,13 @@ public class CustomerDao {
 		 * Each customer record is required to be encapsulated as a "Customer" class object and added to the "customers" List
 		 */
 		List<Customer> customers = new ArrayList<Customer>();
+		/*
+	 		SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode 
+			FROM Customer C, Person P
+			WHERE C.Id = P.Id
+		 */
 		try {
-			
-			// root = username, qnzMxS7qAB^@qm = password
-			Statement st = Connections.generateStatement();
-			
-			/*
-		 		SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode 
-				FROM Customer C, Person P
-				WHERE C.Id = P.Id
-			 */
-			
+			Statement st = Connections.generateStatement();	
 			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode" + 
 					" FROM Customer C, Person P" + 
 					" WHERE C.Id = P.Id");
@@ -122,21 +125,29 @@ public class CustomerDao {
 		 * The students code to fetch data from the database will be written here
 		 * The customer record is required to be encapsulated as a "Customer" class object
 		 */
-		
-		/*Sample data begins*/
 		Customer customer = new Customer();
-		customer.setAccountNo(111);
-		customer.setAddress("123 Success Street");
-		customer.setLastName("Lut");
-		customer.setFirstName("Shiyong");
-		customer.setCity("Stony Brook");
-		customer.setState("NY");
-		customer.setEmail("shiyong@cs.sunysb.edu");
-		customer.setZipCode(11790);
-		customer.setCreditCard("1234567812345678");
-		customer.setRating(1);
-		/*Sample data ends*/
-		
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, C.Email, C.AccountNo, C.CreditCardNo, C.Rating," + 
+					" P.Address, P.City, P.State, P.ZipCode" + 
+					" FROM Customer C, Person P" + 
+					" WHERE C.Id = P.Id AND C.AccountNo = " + accountNo);
+			while(rs.next()) {
+				customer.setAccountNo(rs.getInt("AccountNo"));
+				customer.setAddress(rs.getString("Address"));
+				customer.setLastName(rs.getString("LastName"));
+				customer.setFirstName(rs.getString("FirstName"));
+				customer.setCity(rs.getString("City"));
+				customer.setState(rs.getString("State"));
+				customer.setEmail(rs.getString("Email"));
+				customer.setZipCode(rs.getInt("ZipCode"));
+				customer.setCreditCard(rs.getString("CreditCardNo"));
+				customer.setRating(rs.getInt("Rating"));
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 		return customer;
 	}
 	
@@ -147,7 +158,14 @@ public class CustomerDao {
 		 * The students code to delete the data from the database will be written here
 		 * accountNo, which is the Customer's accountNo who's details have to be deleted, is given as method parameter
 		 */
-
+		try {
+			Statement st = Connections.generateStatement();	
+			st.executeQuery("DELETE FROM Customer WHERE AccountNo = " + accountNo);
+			
+		} catch (Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
@@ -162,6 +180,7 @@ public class CustomerDao {
 		 * username, which is the email address of the customer, who's ID has to be returned, is given as method parameter
 		 * The Customer's ID(accountNo) is required to be returned as a String
 		 */
+		
 
 		return 111;
 	}
@@ -176,16 +195,12 @@ public class CustomerDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database insertion of the customer details and return "success" or "failure" based on result of the database insertion.
 		 */
+		/*
+		 * INSERT INTO Person VALUES (5, 'Jenna', 'Smith', '200 Stony Brook Rd', 'Stony Brook', 'New York', 11790);
+		 * INSERT INTO Customer VALUE(5, 1011, '1234567812345678', 'jenna@smith.com', '2014-04-01 16:40:40', 1);
+		 */
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cse305","root","qnzMxS7qAB^@qm");
-			Statement st = con.createStatement();
-			
-			/*
-			 * INSERT INTO Person VALUES (5, 'Jenna', 'Smith', '200 Stony Brook Rd', 'Stony Brook', 'New York', 11790);
-			 * INSERT INTO Customer VALUE(5, 1011, '1234567812345678', 'jenna@smith.com', '2014-04-01 16:40:40', 1);
-			 */
-			ResultSet rs = st.executeQuery("INSERT INTO Person VALUES (");
+			Statement st = Connections.generateStatement();	
 		}
 		catch(Exception e) {
 			return "failure";

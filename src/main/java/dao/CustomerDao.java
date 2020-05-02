@@ -73,7 +73,7 @@ public class CustomerDao {
 		
 	}
 
-	public List<Customer> getCustomerMailingList() throws SQLException {
+	public List<Customer> getCustomerMailingList() {
 
 		/*
 		 * This method fetches the all customer mailing details and returns it
@@ -81,50 +81,37 @@ public class CustomerDao {
 		 * Each customer record is required to be encapsulated as a "Customer" class object and added to the "customers" List
 		 */
 		List<Customer> customers = new ArrayList<Customer>();
-//		try {
-//			Class.forName("com.mysql.jdbc.Driver");
-//			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cse305","root","qnzMxS7qAB^@qm");
-//			Statement st = con.createStatement();
-//			
-//			/*
-//		 		SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode 
-//				FROM Customer C, Person P
-//				WHERE C.Id = P.Id
-//			 */
-//			
-//			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode" + 
-//					" FROM Customer C, Person P" + 
-//					" WHERE C.Id = P.Id");
-//			
-//			while(rs.next()) {
-//				Customer customer = new Customer();
-//				customer.setAddress(rs.getString("Address"));
-//				customer.setLastName(rs.getString("LastName"));
-//				customer.setFirstName(rs.getString("FirstName"));
-//				customer.setCity(rs.getString("City"));
-//				customer.setState(rs.getString("State"));
-//				customer.setEmail(rs.getString("Email"));
-//				customer.setZipCode(rs.getInt("ZipCode"));
-//				customers.add(customer);
-//			}
-//			
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Customer customer = new Customer();
-			customer.setAddress("123 Success Street");
-			customer.setLastName("Lu");
-			customer.setFirstName("Shiyong");
-			customer.setCity("Stook");
-			customer.setState("NY");
-			customer.setEmail("shiyong@cs.sunysb.edu");
-			customer.setZipCode(11790);
-			customers.add(customer);			
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cse305","root","qnzMxS7qAB^@qm");
+			// root = username, qnzMxS7qAB^@qm = password
+			Statement st = con.createStatement();
+			
+			/*
+		 		SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode 
+				FROM Customer C, Person P
+				WHERE C.Id = P.Id
+			 */
+			
+			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode" + 
+					" FROM Customer C, Person P" + 
+					" WHERE C.Id = P.Id");
+			
+			while(rs.next()) {
+				Customer customer = new Customer();
+				customer.setAddress(rs.getString("Address"));
+				customer.setLastName(rs.getString("LastName"));
+				customer.setFirstName(rs.getString("FirstName"));
+				customer.setCity(rs.getString("City"));
+				customer.setState(rs.getString("State"));
+				customer.setEmail(rs.getString("Email"));
+				customer.setZipCode(rs.getInt("ZipCode"));
+				customers.add(customer);
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
 		}
-		/*Sample data ends*/
 		return customers;
 	}
 

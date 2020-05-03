@@ -31,7 +31,7 @@ public class CustomerDao {
 		 */
 		try {
 			Statement st = Connections.generateStatement();	
-			ResultSet rs = st.executeQuery("SELECT C.AccountNo, C.Email, C.CreditCardNo, C.Rating," +
+			ResultSet rs = st.executeQuery("SELECT C.AccountNo, P.Email, C.CreditCardNo, C.Rating," +
 					" P.FirstName, P.LastName,  P.Address, P.City, P.State, P.ZipCode" + 
 					" FROM Customer C, Person P" + 
 					" WHERE C.Id = P.Id");
@@ -95,7 +95,7 @@ public class CustomerDao {
 		 */
 		try {
 			Statement st = Connections.generateStatement();	
-			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode" + 
+			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, P.Email, P.Address, P.City, P.State, P.ZipCode" + 
 					" FROM Customer C, Person P" + 
 					" WHERE C.Id = P.Id");
 			
@@ -128,7 +128,7 @@ public class CustomerDao {
 		Customer customer = new Customer();
 		try {
 			Statement st = Connections.generateStatement();	
-			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, C.Email, C.AccountNo, C.CreditCardNo, C.Rating," + 
+			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, P.Email, C.AccountNo, C.CreditCardNo, C.Rating," + 
 					" P.Address, P.City, P.State, P.ZipCode" + 
 					" FROM Customer C, Person P" + 
 					" WHERE C.Id = P.Id AND C.AccountNo = " + accountNo);

@@ -1,7 +1,10 @@
 package dao;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import model.Customer;
@@ -64,14 +67,44 @@ public class CustomerDao {
 		 * The customer record is required to be encapsulated as a "Customer" class object
 		 */
 
-
 		/*Sample data begins*/
-		
+		/*
+		 * CREATE VIEW CustomerRevenue(AccountNo, TotalRevenue) 
+		 * 	AS SELECT AccountNo, SUM(TotalFare * 0.1) 
+		 * 	FROM Reservation GROUP BY AccountNo
+		 * 
+		 * SELECT CR.AccountNo, P.FirstName, P.LastName 
+		 * 	FROM CustomerRevenue CR, Customer C, Person P 
+		 * 	WHERE CR.AccountNo = C.AccountNo AND C.Id = P.Id 
+		 * 		AND CR.TotalRevenue >= (SELECT MAX(TotalRevenue) FROM CustomerRevenue)
+
+		 */
 		Customer customer = new Customer();
+		
+		try {
+			Statement st = Connections.generateStatement();	
+			st.executeQuery("CREATE VIEW CustomerRevenue(AccountNo, TotalRevenue)"
+					+ " AS SELECT AccountNo, SUM(TotalFare * 0.1)"
+					+ " FROM Reservation GROUP By AccountNo");
+			
+			ResultSet rs = st.executeQuery("SELECT CR.AccountNo, P.FirstName, P.LastName"
+					+ " FROM CustomerRevenue CR, Customer C, Person P"
+					+ " WHERE CR.AccountNo = C.AccountNo AND C.Id = P.Id"
+					+ "		AND CR.TotalRevenue >= (SELECT MAX(TotalRevenue) FROM CustomerRevenue");
+			
+			if(rs.next()) {
+				customer.setAccountNo(rs.getInt("AccountNo"));
+				customer.setLastName(rs.getString("LastName"));
+				customer.setFirstName(rs.getString("FirstName"));
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 		// Customer ID = Account Number
-		customer.setAccountNo(111);
-		customer.setLastName("Lu");
-		customer.setFirstName("Shiyfong");
+//		customer.setAccountNo(111);
+//		customer.setLastName("Lu");
+//		customer.setFirstName("Shiyfong");
 		/*Sample data ends*/
 	
 		return customer;
@@ -176,11 +209,22 @@ public class CustomerDao {
 		 * This method returns the Customer's ID based on the provided email address
 		 * The students code to fetch data from the database will be written here
 		 * username, which is the email address of the customer, who's ID has to be returned, is given as method parameter
-		 * The Customer's ID(accountNo) is required to be returned as a String
+		 * The Customer's ID(accountNo) is required to be returned as an Int
 		 */
-		
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("SELECT AccountNo FROM customer c LEFT JOIN person p"
+					+ " ON c.id = p.id WHERE p.email = \'" + emailaddress +"\'");
+			
+			if(rs.next()) {
+				return rs.getInt("AccountNo");
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 
-		return 111;
+		return -1;
 	}
 
 
@@ -197,8 +241,20 @@ public class CustomerDao {
 		 * INSERT INTO Person VALUES (5, 'Jenna', 'Smith', '200 Stony Brook Rd', 'Stony Brook', 'New York', 11790);
 		 * INSERT INTO Customer VALUE(5, 1011, '1234567812345678', 'jenna@smith.com', '2014-04-01 16:40:40', 1);
 		 */
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		String strDate = dateFormat.format(Calendar.getInstance().getTime());
 		try {
 			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("INSERT INTO person (Email, FirstName, LastName, Address, City, State, ZipCode)"
+					+ " VALUES (\'" + customer.getEmail() + "\', \'" + customer.getFirstName() + "\',"
+						+ " \'" + customer.getLastName() + "\', \'" + customer.getAddress() + "\',"
+						+ " \'" + customer.getCity() + "\', \'" + customer.getState() + "\',"
+						+ customer.getZipCode());
+			if(rs.next()) {
+				st.executeQuery("INSERT INTO customer (Id, AccountNo, CreditCardNo, CreationDate, Rating) VALUES"
+						+ " (" + rs.getInt("Id") + ", " + customer.getAccountNo() + ", \'" + customer.getCreditCard() + "\',"
+						+ "\'" + strDate + "\', " + customer.getRating());
+			}
 		}
 		catch(Exception e) {
 			return "failure";
@@ -218,6 +274,25 @@ public class CustomerDao {
 		 * You need to handle the database update and return "success" or "failure" based on result of the database update.
 		 */
 		
+		/*
+		 * UPDATE Customer C INNER JOIN Person P ON (C.Id = P.Id)
+				SET
+				C.Rating = 5
+				WHERE C.accountNo = 1
+		 * 
+		 */
+		try {
+			Statement st = Connections.generateStatement();	
+			st.executeQuery("UPDATE Customer C INNER JOIN Person P ON (C.Id = P.Id)"
+					+ "SET C.CreditCardNo = \'" + customer.getCreditCard() +"\',"
+					+ " C.Rating = " + customer.getRating() + "P.FirstName = \'" + customer.getFirstName() + "\',"
+					+ " P.LastName = \'" + customer.getLastName() + "\', P.Address = \'" + customer.getAddress() + "\',"
+					+ " P.City = \'" + customer.getCity()  + "\', P.State = \'" + customer.getState() + "\',"
+					+ " P.Zipcode = " + customer.getZipCode() + " WHERE AccountNo = " + customer.getAccountNo());
+		}
+		catch(Exception e) {
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/

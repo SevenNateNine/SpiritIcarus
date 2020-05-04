@@ -27,7 +27,7 @@ public class LoginDao {
 		try {
 			Statement st = Connections.generateStatement();	
 			ResultSet rs = st.executeQuery("SELECT DISTINCT * FROM person p "
-					+ "WHERE p.username = " + username + " AND p.password = " + password);
+					+ "WHERE p.email = \'" + username + "\' AND p.password = \'" + password + "\'");
 			
 			if(!rs.next()) {
 				return null;
@@ -35,7 +35,7 @@ public class LoginDao {
 			
 			st = Connections.generateStatement();	
 			rs = st.executeQuery("SELECT DISTINCT * FROM person p, employee e"
-					+ " WHERE e.id = p.id AND p.email = " + username + " AND p.password = " + password);
+					+ " WHERE e.id = p.id AND p.email = \'" + username + "\' AND p.password = \'" + password + "\'");
 			
 			if(!rs.next()) {
 				login.setRole("customer");

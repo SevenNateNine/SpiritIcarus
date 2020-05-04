@@ -9,13 +9,14 @@ public class Connections {
 	public static Statement generateStatement() {
 		String user = "root";
 		String password = "qnzMxS7qAB^@qm";
-		String url = "jdbc:mysql://localhost:3306/cse305";
+		String url = "jdbc:mysql://localhost:3306/cse305?useSSL=false&serverTimezone=UTC";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection(url, user, password);
 			Statement st = con.createStatement();
 			return st;
 		} catch (Exception e) {
+			System.out.println("did not connect");
 			System.out.println(e);
 		}
 		return null;

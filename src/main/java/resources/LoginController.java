@@ -46,6 +46,8 @@ public class LoginController extends HttpServlet {
 			String role = login.getRole();
 			request.getSession(true).setAttribute("email", username);
 			request.getSession(true).setAttribute("role", role);
+			
+			
 			if(role.equals("manager")) {
 				EmployeeDao employeeDao = new EmployeeDao();
 				String employeeID = employeeDao.getEmployeeID(username);

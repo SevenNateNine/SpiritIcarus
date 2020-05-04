@@ -51,4 +51,5 @@ public class Flight {
 	public void setNumReservations(int numReservations) {
 		this.NumReservations = numReservations;
 	}
+	
 }

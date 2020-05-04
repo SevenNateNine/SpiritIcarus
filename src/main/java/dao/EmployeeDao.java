@@ -1,5 +1,7 @@
 package dao;
 
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +22,22 @@ public class EmployeeDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database insertion of the employee details and return "success" or "failure" based on result of the database insertion.
 		 */
-		
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("INSERT INTO person (Email, FirstName, LastName, Address, City, State, ZipCode)"
+					+ " VALUES (\'" + employee.getEmail() + "\', \'" + employee.getFirstName() + "\',"
+						+ " \'" + employee.getLastName() + "\', \'" + employee.getAddress() + "\',"
+						+ " \'" + employee.getCity() + "\', \'" + employee.getState() + "\',"
+						+ employee.getZipCode() + ")");
+			if(rs.next()) {
+				st.executeQuery("INSERT INTO employee (Id, SSN, IsManager, StartDate, HourlyRate) VALUES"
+						+ " (" + rs.getInt("Id") + ", " + Integer.parseInt(employee.getSSN()) + ", " + employee.getIsManager() 
+						+ ", \'" + employee.getStartDate() + "\', " + employee.getHourlyRate() + ")");
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
@@ -36,6 +53,18 @@ public class EmployeeDao {
 		 * You need to handle the database update and return "success" or "failure" based on result of the database update.
 		 */
 		
+		try {
+			Statement st = Connections.generateStatement();	
+			st.executeQuery("UPDATE Employee E INNER JOIN Person P ON (E.Id = P.Id)"
+					+ "SET E.IsManager = " + employee.getIsManager() + ", E.HourlyRate = " + employee.getHourlyRate() + ","
+					+ " E.StartDate = \'" + employee.getStartDate() + "\', P.FirstName = \'" + employee.getFirstName() + "\',"
+					+ " P.LastName = \'" + employee.getLastName() + "\', P.Address = \'" + employee.getAddress() + "\',"
+					+ " P.City = \'" + employee.getCity()  + "\', P.State = \'" + employee.getState() + "\',"
+					+ " P.Zipcode = " + employee.getZipCode() + " WHERE SSN = " + Integer.parseInt(employee.getSSN()));
+		}
+		catch(Exception e) {
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
@@ -49,6 +78,14 @@ public class EmployeeDao {
 		 * You need to handle the database deletion and return "success" or "failure" based on result of the database deletion.
 		 */
 		
+		try {
+			Statement st = Connections.generateStatement();	
+			st.executeQuery("DELETE FROM Employee WHERE SSN = " + Integer.parseInt(SSN));
+			
+		} catch (Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
@@ -66,23 +103,49 @@ public class EmployeeDao {
 
 		List<Employee> employees = new ArrayList<Employee>();
 		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Employee employee = new Employee();
-			employee.setEmail("shiyong@cs.sunysb.edu");
-			employee.setFirstName("Shiyong");
-			employee.setLastName("Lu");
-			employee.setAddress("123 Success Street");
-			employee.setCity("Stony Brook");
-			employee.setStartDate("2006-10-17");
-			employee.setState("NY");
-			employee.setZipCode(11790);
-			employee.setSSN("6314135555");
-			employee.setHourlyRate(100);
-			employee.setIsManager(true);
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, P.Email, P.Address,"
+					+ " P.City, P.State, P.ZipCode, E.HourlyRate, E.IsManager, E.SSN" + 
+					" FROM Employee E, Person P" + 
+					" WHERE E.Id = P.Id");
 			
-			employees.add(employee);
+			while(rs.next()) {
+				Employee employee = new Employee();
+				employee.setAddress(rs.getString("Address"));
+				employee.setLastName(rs.getString("LastName"));
+				employee.setFirstName(rs.getString("FirstName"));
+				employee.setCity(rs.getString("City"));
+				employee.setState(rs.getString("State"));
+				employee.setEmail(rs.getString("Email"));
+				employee.setZipCode(rs.getInt("ZipCode"));
+				employee.setHourlyRate(rs.getFloat("HourlyRate"));
+				employee.setIsManager(rs.getBoolean("IsManager"));
+				employee.setSSN(Integer.toString(rs.getInt("SSN")));
+				employees.add(employee);
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
 		}
+		
+		/*Sample data begins*/
+//		for (int i = 0; i < 10; i++) {
+//			Employee employee = new Employee();
+//			employee.setEmail("shiyong@cs.sunysb.edu");
+//			employee.setFirstName("Shiyong");
+//			employee.setLastName("Lu");
+//			employee.setAddress("123 Success Street");
+//			employee.setCity("Stony Brook");
+//			employee.setStartDate("2006-10-17");
+//			employee.setState("NY");
+//			employee.setZipCode(11790);
+//			employee.setSSN("6314135555");
+//			employee.setHourlyRate(100);
+//			employee.setIsManager(true);
+//			
+//			employees.add(employee);
+//		}
 		/*Sample data ends*/
 		
 		return employees;
@@ -98,18 +161,42 @@ public class EmployeeDao {
 
 		Employee employee = new Employee();
 		
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("SELECT P.FirstName, P.LastName, P.Email, P.Address,"
+					+ " P.City, P.State, P.ZipCode, E.HourlyRate, E.IsManager, E.SSN" + 
+					" FROM Employee E, Person P" + 
+					" WHERE E.SSN = " + Integer.parseInt(SSN));
+			
+			while(rs.next()) {
+				employee.setAddress(rs.getString("Address"));
+				employee.setLastName(rs.getString("LastName"));
+				employee.setFirstName(rs.getString("FirstName"));
+				employee.setCity(rs.getString("City"));
+				employee.setState(rs.getString("State"));
+				employee.setEmail(rs.getString("Email"));
+				employee.setZipCode(rs.getInt("ZipCode"));
+				employee.setHourlyRate(rs.getFloat("HourlyRate"));
+				employee.setIsManager(rs.getBoolean("IsManager"));
+				employee.setSSN(Integer.toString(rs.getInt("SSN")));
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
 		/*Sample data begins*/
-		employee.setEmail("shiyong@cs.sunysb.edu");
-		employee.setFirstName("Shiyong");
-		employee.setLastName("Lu");
-		employee.setAddress("123 Success Street");
-		employee.setCity("Stony Brook");
-		employee.setStartDate("2006-10-17");
-		employee.setState("NY");
-		employee.setZipCode(11790);
-		employee.setSSN("6314135555");
-		employee.setHourlyRate(100);
-		employee.setIsManager(true);
+//		employee.setEmail("shiyong@cs.sunysb.edu");
+//		employee.setFirstName("Shiyong");
+//		employee.setLastName("Lu");
+//		employee.setAddress("123 Success Street");
+//		employee.setCity("Stony Brook");
+//		employee.setStartDate("2006-10-17");
+//		employee.setState("NY");
+//		employee.setZipCode(11790);
+//		employee.setSSN("6314135555");
+//		employee.setHourlyRate(100);
+//		employee.setIsManager(true);
 		/*Sample data ends*/
 		
 		return employee;
@@ -122,11 +209,31 @@ public class EmployeeDao {
 		 * The record is required to be encapsulated as a "Employee" class object
 		 */
 		
+		/*
+		 * 
+		 * CREATE VIEW CRRevenue(SSN, TotalRevenue) AS SELECT RepSSN, SUM(TotalFare * 0.1) FROM Reservation GROUP BY RepSSN
+		 * SELECT SSN FROM CRRevenue WHERE TotalRevenue >= (SELECT MAX(TotalRevenue) FROM CRRevenue)
+		 * 
+		 */
 		Employee employee = new Employee();
-		
+		try {
+			Statement st = Connections.generateStatement();	
+			st.executeQuery("CREATE VIEW CRRevenue(SSN, TotalRevenue)"
+					+ " AS SELECT RepSSN, SUM(TotalFare * 0.1)"
+					+ " FROM Reservation GROUP By RepSSN");
+			
+			ResultSet rs = st.executeQuery("SELECT SSN FROM CRRevenue"
+					+ " WHERE TotalRevenue >= (SELECT MAX(TOTAL REVENUE) FROM CRRevenue");
+			
+			if(rs.next()) {
+				employee.setSSN(Integer.toString(rs.getInt("SSN")));
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 		/*Sample data begins*/
 		// EmployeeID = SSN
-		employee.setSSN("6314135555");
 		/*Sample data ends*/
 		
 		return employee;
@@ -138,8 +245,16 @@ public class EmployeeDao {
 		 * username, which is the Employee's email address who's Employee ID has to be fetched, is given as method parameter
 		 * The Employee ID(SSN) is required to be returned as a String
 		 */
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("SELECT ssn FROM employee e LEFT JOIN person p ON e.id = p.id"
+					+ " WHERE p.email = \'" + username + "\'");
+			return Integer.toString(rs.getInt("SSN"));
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 
-		return "111111111";
+		return "-1";
 	}
 
 }

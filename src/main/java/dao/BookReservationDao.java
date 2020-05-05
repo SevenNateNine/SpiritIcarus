@@ -18,7 +18,6 @@ public class BookReservationDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database deletion and return "success" or "failure" based on result of the database deletion.
 		 */
-		//System.out.println("hello There");
 		try {
 			String depDate=reformatDate(bookRes.getDepartureDate());
 			Statement st=Connections.generateStatement();

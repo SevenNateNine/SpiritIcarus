@@ -5,7 +5,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Customer;
 import model.Employee;
 
 public class EmployeeDao {
@@ -24,17 +23,20 @@ public class EmployeeDao {
 		 */
 		try {
 			Statement st = Connections.generateStatement();	
-			ResultSet rs = st.executeQuery("INSERT INTO person (Email, FirstName, LastName, Address, City, State, ZipCode)"
-					+ " VALUES (\'" + employee.getEmail() + "\', \'" + employee.getFirstName() + "\',"
-						+ " \'" + employee.getLastName() + "\', \'" + employee.getAddress() + "\',"
-						+ " \'" + employee.getCity() + "\', \'" + employee.getState() + "\',"
-						+ employee.getZipCode() + ")");
-			if(rs.next()) {
-				st.executeQuery("INSERT INTO employee (Id, SSN, IsManager, StartDate, HourlyRate) VALUES"
-						+ " (" + rs.getInt("Id") + ", " + Integer.parseInt(employee.getSSN()) + ", " + employee.getIsManager() 
-						+ ", \'" + employee.getStartDate() + "\', " + employee.getHourlyRate() + ")");
-			}
+			String addPersonQuery = "INSERT INTO person (Email, Password, FirstName, LastName, Address, City, State, ZipCode)"
+					+ " VALUES (\'" + employee.getEmail() + "\',\'" + employee.getPassword() + "\', \'" + employee.getFirstName() + "\',"
+					+ " \'" + employee.getLastName() + "\', \'" + employee.getAddress() + "\',"
+					+ " \'" + employee.getCity() + "\', \'" + employee.getState() + "\', "
+					+ employee.getZipCode() + ")";
+			String selectQuery = "SELECT id FROM person p WHERE p.email = \'" + employee.getEmail() + "\' LIMIT 1";
+			String addEmployeeQuery = "INSERT INTO employee (Id, SSN, IsManager, StartDate, HourlyRate) VALUES"
+					+ " ((" + selectQuery + "), " + Integer.parseInt(employee.getSSN()) + ", " + employee.getIsManager() 
+					+ ", \'" + employee.getStartDate() + "\', " + employee.getHourlyRate() + ")";
+			System.out.println(addPersonQuery + "\n" + addEmployeeQuery + "\n" + selectQuery);
+			st.executeUpdate(addPersonQuery);
+			st.executeUpdate(addEmployeeQuery);
 		} catch (Exception e) {
+			System.out.println("ADD EMPLOYEE FAILED");
 			System.out.println(e);
 			return "failure";
 		}
@@ -55,14 +57,17 @@ public class EmployeeDao {
 		
 		try {
 			Statement st = Connections.generateStatement();	
-			st.executeQuery("UPDATE Employee E INNER JOIN Person P ON (E.Id = P.Id)"
-					+ "SET E.IsManager = " + employee.getIsManager() + ", E.HourlyRate = " + employee.getHourlyRate() + ","
+			String editEmployee = "UPDATE Employee E INNER JOIN Person P ON (E.Id = P.Id)"
+					+ " SET E.IsManager = " + employee.getIsManager() + ", E.HourlyRate = " + employee.getHourlyRate() + ","
 					+ " E.StartDate = \'" + employee.getStartDate() + "\', P.FirstName = \'" + employee.getFirstName() + "\',"
 					+ " P.LastName = \'" + employee.getLastName() + "\', P.Address = \'" + employee.getAddress() + "\',"
 					+ " P.City = \'" + employee.getCity()  + "\', P.State = \'" + employee.getState() + "\',"
-					+ " P.Zipcode = " + employee.getZipCode() + " WHERE SSN = " + Integer.parseInt(employee.getSSN()));
+					+ " P.Zipcode = " + employee.getZipCode() + " WHERE SSN = " + Integer.parseInt(employee.getSSN());
+			System.out.println(editEmployee);
+			st.executeUpdate(editEmployee);
 		}
 		catch(Exception e) {
+			System.out.println(e);
 			return "failure";
 		}
 		/*Sample data begins*/
@@ -80,7 +85,7 @@ public class EmployeeDao {
 		
 		try {
 			Statement st = Connections.generateStatement();	
-			st.executeQuery("DELETE FROM Employee WHERE SSN = " + Integer.parseInt(SSN));
+			st.executeUpdate("DELETE e, p FROM Employee INNER JOIN Person p ON e.id = p.id WHERE SSN = " + Integer.parseInt(SSN));
 			
 		} catch (Exception e) {
 			System.out.println(e);

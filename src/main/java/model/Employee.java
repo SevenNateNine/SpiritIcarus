@@ -18,6 +18,7 @@ public class Employee {
 	private String email; 
 	private String SSN;
 	private Boolean isManager;
+	private String password;
 	
 	public String getStartDate() {
 		return startDate;
@@ -84,6 +85,12 @@ public class Employee {
 	}
 	public void setSSN(String SSN) {
 		this.SSN = SSN;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 

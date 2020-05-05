@@ -69,7 +69,7 @@ public class LoginDao {
 		/*Sample data begins*/
 		try {
 			Statement st = Connections.generateStatement();	
-			st.executeQuery("INSERT INTO person (email, password) "
+			st.executeUpdate("INSERT INTO person (email, password) "
 					+ "VALUES (\'"+ login.getUsername() +"\', \'"+ login.getPassword() +"\')");
 			
 		} catch (Exception e) {

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import java.util.regex.*;
 import model.Customer;
 
 
@@ -195,7 +196,7 @@ public class CustomerDao {
 		 */
 		try {
 			Statement st = Connections.generateStatement();	
-			st.executeQuery("DELETE FROM Customer WHERE AccountNo = " + accountNo);
+			st.executeUpdate("DELETE c, p FROM Customer c INNER JOIN Person p on c.id = p.id WHERE c.AccountNo = " + accountNo);
 			
 		} catch (Exception e) {
 			System.out.println(e);
@@ -245,22 +246,44 @@ public class CustomerDao {
 		 * INSERT INTO Person VALUES (5, 'Jenna', 'Smith', '200 Stony Brook Rd', 'Stony Brook', 'New York', 11790);
 		 * INSERT INTO Customer VALUE(5, 1011, '1234567812345678', 'jenna@smith.com', '2014-04-01 16:40:40', 1);
 		 */
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		String strDate = dateFormat.format(Calendar.getInstance().getTime());
+		String emailRegex = "^(.+)@(.+)$";
+		Pattern emailPattern = Pattern.compile(emailRegex);
+		
+		String email = customer.getEmail();
+		String creditCard = customer.getCreditCard();
+		
+		try {
+			Matcher matcher = emailPattern.matcher(email);
+			if(!matcher.matches()) {
+				throw new IllegalArgumentException();
+			}
+			if(creditCard.length() > 16) {
+				throw new IllegalArgumentException();
+			}
+		} catch(Exception e) {
+			System.out.println("ERROR: Data Validiation");
+			System.out.println(e);
+		}
 		try {
 			Statement st = Connections.generateStatement();	
-			ResultSet rs = st.executeQuery("INSERT INTO person (Email, FirstName, LastName, Address, City, State, ZipCode)"
-					+ " VALUES (\'" + customer.getEmail() + "\', \'" + customer.getFirstName() + "\',"
-						+ " \'" + customer.getLastName() + "\', \'" + customer.getAddress() + "\',"
-						+ " \'" + customer.getCity() + "\', \'" + customer.getState() + "\',"
-						+ customer.getZipCode());
-			if(rs.next()) {
-				st.executeQuery("INSERT INTO customer (Id, AccountNo, CreditCardNo, CreationDate, Rating) VALUES"
-						+ " (" + rs.getInt("Id") + ", " + customer.getAccountNo() + ", \'" + customer.getCreditCard() + "\',"
-						+ "\'" + strDate + "\', " + customer.getRating());
-			}
+			String insertPerson = "INSERT INTO person (Email, Password, FirstName, LastName, Address, City, State, ZipCode)"
+					+ " VALUES (\'" + email + "\', \'" + customer.getPassword() + "\', \'" + customer.getFirstName() + "\',"
+					+ " \'" + customer.getLastName() + "\', \'" + customer.getAddress() + "\',"
+					+ " \'" + customer.getCity() + "\', \'" + customer.getState() + "\',"
+					+ customer.getZipCode() + ")";
+			String selectPerson = "SELECT id FROM person p WHERE p.email = \'" + customer.getEmail() + "\' LIMIT 1";
+			String insertCustomer = "INSERT INTO customer (Id, AccountNo, CreditCardNo, CreationDate, Rating) VALUES"
+					+ " ((" + selectPerson + "), (" + selectPerson + "), \'" + creditCard + "\',"
+					+ "\'" + strDate + "\', " + customer.getRating() + ")";
+			System.out.println(insertPerson);
+			System.out.println(insertCustomer);
+			st.executeUpdate(insertPerson);
+			st.executeUpdate(insertCustomer);
 		}
 		catch(Exception e) {
+			System.out.println(e);
 			return "failure";
 		}
 		/*Sample data begins*/
@@ -287,7 +310,7 @@ public class CustomerDao {
 		 */
 		try {
 			Statement st = Connections.generateStatement();	
-			st.executeQuery("UPDATE Customer C INNER JOIN Person P ON (C.Id = P.Id)"
+			st.executeUpdate("UPDATE Customer C INNER JOIN Person P ON (C.Id = P.Id)"
 					+ "SET C.CreditCardNo = \'" + customer.getCreditCard() +"\',"
 					+ " C.Rating = " + customer.getRating() + "P.FirstName = \'" + customer.getFirstName() + "\',"
 					+ " P.LastName = \'" + customer.getLastName() + "\', P.Address = \'" + customer.getAddress() + "\',"

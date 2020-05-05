@@ -63,7 +63,7 @@ public class AddEmployeeController extends HttpServlet {
 		employee.setStartDate(startDate);
 		employee.setState(state);
 		employee.setZipCode(zipcode);
-//		employee.setTelephone(telephone);
+		employee.setPassword(password);
 		employee.setSSN(ssn);
 		employee.setHourlyRate(hourlyRate);
 		employee.setIsManager(isManager);
@@ -82,8 +82,8 @@ public class AddEmployeeController extends HttpServlet {
 				login.setRole("customerRepresentative");
 			}
 			LoginDao loginDao = new LoginDao();
-			String loginResult = loginDao.addUser(login);
-			if(loginResult.equals("success")) {
+//			String loginResult = loginDao.addUser(login);
+			if(result.equals("success")) {
 				response.sendRedirect("managerHome.jsp?status=addEmployeeSuccess");
 			}
 			else {

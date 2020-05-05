@@ -48,7 +48,6 @@ public class AddCustomerController extends HttpServlet {
 		String state= request.getParameter("customerState");
 		int zipcode = Integer.parseInt(request.getParameter("customerZipcode"));
 //		String telephone = request.getParameter("customerTelephone");
-//		String ssn = request.getParameter("customerSSN");
 		String creditCard = request.getParameter("customerCreditCard");
 		int rating = Integer.parseInt(request.getParameter("customerRating"));
 		
@@ -61,7 +60,7 @@ public class AddCustomerController extends HttpServlet {
 		customer.setState(state);
 		customer.setZipCode(zipcode);
 //		customer.setTelephone(telephone);
-//		customer.setCustomerID(ssn);
+		customer.setPassword(password);
 		customer.setCreditCard(creditCard);
 		customer.setRating(rating);
 		
@@ -74,8 +73,8 @@ public class AddCustomerController extends HttpServlet {
 			login.setPassword(password);
 			login.setRole("customer");
 			LoginDao loginDao = new LoginDao();
-			String loginResult = loginDao.addUser(login);
-			if(loginResult.equals("success")) {
+//			String loginResult = loginDao.addUser(login);
+			if(result.equals("success")) {
 				response.sendRedirect("customerRepresentativeHome.jsp?status=addCustomerSuccess");
 			}
 			else {

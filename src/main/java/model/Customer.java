@@ -17,6 +17,7 @@ public class Customer {
 	private String email;
 	private String creditCard;
 	private int rating;
+	private String Password;
 	
 	public String getFirstName() {
 		return firstName;
@@ -77,6 +78,12 @@ public class Customer {
 	}
 	public void setAccountNo(int accountNo) {
 		this.accountNo = accountNo;
+	}
+	public String getPassword() {
+		return Password;
+	}
+	public void setPassword(String password) {
+		Password = password;
 	}
 	
 }

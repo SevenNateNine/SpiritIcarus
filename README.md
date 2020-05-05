@@ -11,5 +11,3 @@
 * Implemented EmployeeDao.java
 * Implemented CustomerDao.java
 ### Kevin Zheng
-
-# SpiritIcarus

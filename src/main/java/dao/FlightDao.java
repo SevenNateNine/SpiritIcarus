@@ -256,7 +256,7 @@ public class FlightDao {
 			}
 			ResultSet rs=st.executeQuery("SELECT * FROM FlightReservation FR " + 
 					"WHERE NOT EXISTS (SELECT * FROM Reservation R, Includes I" + 
-					" WHERE R.ResrNo = I.ResrNo AND FR.AirlineID = I.AirlineIDAND FR.FlightNo = I.FlightNo AND R.AccountNo = 1008) " + 
+					" WHERE R.ResrNo = I.ResrNo AND FR.AirlineID = I.AirlineIDAND FR.FlightNo = I.FlightNo AND R.AccountNo =\'"+ accountNo+"\')" + 
 					" ORDER BY FR.ResrCount DESC;");
 			while(rs.next()) {
 				Flight f = new Flight();

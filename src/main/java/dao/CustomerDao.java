@@ -83,14 +83,18 @@ public class CustomerDao {
 		
 		try {
 			Statement st = Connections.generateStatement();	
-			st.executeQuery("CREATE VIEW CustomerRevenue(AccountNo, TotalRevenue)"
+			try {
+				st.execute("CREATE VIEW CustomerRevenue(AccountNo, TotalRevenue)"
 					+ " AS SELECT AccountNo, SUM(TotalFare * 0.1)"
 					+ " FROM Reservation GROUP By AccountNo");
+			}catch(Exception e) {
+				
+			}
 			
 			ResultSet rs = st.executeQuery("SELECT CR.AccountNo, P.FirstName, P.LastName"
 					+ " FROM CustomerRevenue CR, Customer C, Person P"
 					+ " WHERE CR.AccountNo = C.AccountNo AND C.Id = P.Id"
-					+ "		AND CR.TotalRevenue >= (SELECT MAX(TotalRevenue) FROM CustomerRevenue");
+					+ "		AND CR.TotalRevenue >= (SELECT MAX(TotalRevenue) FROM CustomerRevenue)");
 			
 			if(rs.next()) {
 				customer.setAccountNo(rs.getInt("AccountNo"));

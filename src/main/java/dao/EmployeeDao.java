@@ -218,12 +218,17 @@ public class EmployeeDao {
 		Employee employee = new Employee();
 		try {
 			Statement st = Connections.generateStatement();	
-			st.executeQuery("CREATE VIEW CRRevenue(SSN, TotalRevenue)"
+			try {
+				st.execute("CREATE VIEW CRRevenue(SSN, TotalRevenue)"
 					+ " AS SELECT RepSSN, SUM(TotalFare * 0.1)"
 					+ " FROM Reservation GROUP By RepSSN");
+			}
+			catch(Exception e) {
+				
+			}
 			
 			ResultSet rs = st.executeQuery("SELECT SSN FROM CRRevenue"
-					+ " WHERE TotalRevenue >= (SELECT MAX(TOTAL REVENUE) FROM CRRevenue");
+					+ " WHERE TotalRevenue >= (SELECT MAX(TOTAL REVENUE) FROM CRRevenue)");
 			
 			if(rs.next()) {
 				employee.setSSN(Integer.toString(rs.getInt("SSN")));

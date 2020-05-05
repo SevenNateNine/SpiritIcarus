@@ -228,7 +228,7 @@ public class EmployeeDao {
 			}
 			
 			ResultSet rs = st.executeQuery("SELECT SSN FROM CRRevenue"
-					+ " WHERE TotalRevenue >= (SELECT MAX(TOTAL REVENUE) FROM CRRevenue)");
+					+ " WHERE TotalRevenue >= (SELECT MAX(TOTALREVENUE) FROM CRRevenue)");
 			
 			if(rs.next()) {
 				employee.setSSN(Integer.toString(rs.getInt("SSN")));

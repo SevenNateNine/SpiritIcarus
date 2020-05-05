@@ -5,6 +5,7 @@
 * Implemented FlightReservationsDao.java
 * Implemented BookReservationDao.java
 * Implemented FlightDao.java
+* Implemented SalesReportDao.java
 ### Nathaniel Chan
 * Implemented Connections.java
 * Implemented LoginDao.java

@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import model.Employee;
 
@@ -21,6 +23,20 @@ public class EmployeeDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database insertion of the employee details and return "success" or "failure" based on result of the database insertion.
 		 */
+		String emailRegex = "^(.+)@(.+)$";
+		Pattern emailPattern = Pattern.compile(emailRegex);
+		
+		String email = employee.getEmail();
+		
+		try {
+			Matcher matcher = emailPattern.matcher(email);
+			if(!matcher.matches()) {
+				throw new IllegalArgumentException();
+			}
+		} catch(Exception e) {
+			System.out.println("ERROR: Data Validiation");
+			System.out.println(e);
+		}
 		try {
 			Statement st = Connections.generateStatement();	
 			String addPersonQuery = "INSERT INTO person (Email, Password, FirstName, LastName, Address, City, State, ZipCode)"

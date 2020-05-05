@@ -20,7 +20,7 @@ public class BookReservationDao {
 		 */
 		System.out.println("hello There");
 		try {
-			
+			String depDate=reformatDate(bookRes.getDepartureDate());
 			Statement st=Connections.generateStatement();
 			ResultSet rs=st.executeQuery("SELECT MAX(ResrNo) FROM Reservation");
 			rs.next();
@@ -35,19 +35,37 @@ public class BookReservationDao {
 			int legNo=getLegNo(bookRes.getArrivalAirport(),bookRes.getDepartureAirport(),bookRes.getFlightNum1(),bookRes.getAirlineID());
 			System.out.println(legNo);
 			System.out.println(bookRes.getTypeOfTrip());
-			if( bookRes.getTypeOfTrip().contentEquals("oneway")) {
-				boolean b=st.execute("INSERT INTO Reservation VALUES ("+resNo+",NOW(),100, 1000, NULL,"+accNo+");"
-						+ " INSERT INTO Includes VALUES ("+resNo+", \'"+bookRes.getAirlineID()+"\',"+bookRes.getFlightNum1()+", "
-						+legNo+", \'"+ bookRes.getDepartureDate()+"\');"
-						+ "INSERT INTO ReservationPassenger VALUES("+resNo+", "+id+ ", "+ accNo+", \'"+bookRes.getSeatNum()+"\', \'"
+			if( legNo!=0&&bookRes.getTypeOfTrip().contentEquals("oneway")) {
+				boolean b1=st.execute("INSERT INTO Reservation VALUES ("+resNo+",NOW(),100, 1000, NULL,"+accNo+");");
+				boolean b2=st.execute("INSERT INTO Includes VALUES ("+resNo+", \'"+bookRes.getAirlineID()+"\',"+bookRes.getFlightNum1()+", "
+						+legNo+", \'"+ depDate+"\');");
+				boolean b3=st.execute("INSERT INTO ReservationPassenger VALUES("+resNo+", "+id+ ", "+ accNo+", \'"+bookRes.getSeatNum()+"\', \'"
 								+ bookRes.getSeatClass()+"\' , \'"+bookRes.getMealPref()+"\');");
-				System.out.println(b);
+				if (b1 && b2 && b3)
+					return "success";
+				else 
+					return "failure";
+			}else {
+				int legNo2=getLegNo(bookRes.getDepartureAirport(),bookRes.getArrivalAirport(),bookRes.getFlightNum2(),bookRes.getAirlineID());
+				if (legNo2==0)
+						return "failure";
+				boolean b1=st.execute("INSERT INTO Reservation VALUES ("+resNo+",NOW(),100, 1000, NULL,"+accNo+");");
+				boolean b2=st.execute("INSERT INTO Includes VALUES ("+resNo+", \'"+bookRes.getAirlineID()+"\',"+bookRes.getFlightNum1()+", "
+						+legNo+", \'"+ depDate+"\');");
+				boolean b3=st.execute("INSERT INTO Includes VALUES ("+resNo+", \'"+bookRes.getAirlineID()+"\',"+bookRes.getFlightNum2()+", "
+						+legNo2+", \'"+ reformatDate(bookRes.getReturnDate())+"\');");
+				boolean b4=st.execute("INSERT INTO ReservationPassenger VALUES("+resNo+", "+id+ ", "+ accNo+", \'"+bookRes.getSeatNum()+"\', \'"
+								+ bookRes.getSeatClass()+"\' , \'"+bookRes.getMealPref()+"\');");
+				if(b1 && b2 && b3 && b4) {
+					return "success";
+				}else
+					return "failure";
 			}
 			
 		}catch(Exception e) {
 			System.out.println(e);
 		}
-		return "success";
+		return "failure";
 		
 	}
 	
@@ -69,16 +87,22 @@ public class BookReservationDao {
 	private int getLegNo(String arrAirport, String depAirport, int flightNo, String airlineId) {
 		try {
 			Statement st=Connections.generateStatement();
-			String sql="SELECT LegNo FROM Leg WHERE FlightNo="+flightNo+" AND AirlineID=\'" + airlineId+"\"' "
+			String sql="SELECT LegNo FROM Leg WHERE FlightNo="+flightNo+" AND AirlineID=\'" + airlineId+"\' "
 					+ "AND DepAirportID=\'"+depAirport+"\' AND ArrAirportID=\'"+arrAirport+"\';";
 			ResultSet rs=st.executeQuery(sql);
 			rs.next();
-			System.out.println("sql");
+			System.out.println(sql);
 			return rs.getInt(1);
 		}catch(Exception e) {
 			System.out.println(e);
 		}
 		System.out.println("failed");
 		return 0;
+	}
+	private String reformatDate(String date) {
+		System.out.println(date);
+		String finalDate=date.substring(6)+"-"+date.substring(0,2)+"-"+date.substring(3,5);
+		System.out.println(finalDate);
+		return finalDate;
 	}
 }

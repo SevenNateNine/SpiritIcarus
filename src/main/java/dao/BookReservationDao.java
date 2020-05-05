@@ -18,23 +18,23 @@ public class BookReservationDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database deletion and return "success" or "failure" based on result of the database deletion.
 		 */
-		System.out.println("hello There");
+		//System.out.println("hello There");
 		try {
 			String depDate=reformatDate(bookRes.getDepartureDate());
 			Statement st=Connections.generateStatement();
 			ResultSet rs=st.executeQuery("SELECT MAX(ResrNo) FROM Reservation");
 			rs.next();
 			int resNo=rs.getInt(1)+1;
-			System.out.println("ResNo="+resNo);
+			//System.out.println("ResNo="+resNo);
 			rs=st.executeQuery("SELECT C.accountNo, P.Id FROM Customer C, PERSON P "
 					+ "WHERE P.Id=C.Id AND P.Email=\'"+bookRes.getPassEmail()+"\';");
 			rs.next();
 			int accNo=rs.getInt(1);
 			int id=rs.getInt(2);
-			System.out.println("accNo "+accNo);//works up to here
+			//System.out.println("accNo "+accNo);//works up to here
 			int legNo=getLegNo(bookRes.getArrivalAirport(),bookRes.getDepartureAirport(),bookRes.getFlightNum1(),bookRes.getAirlineID());
-			System.out.println(legNo);
-			System.out.println(bookRes.getTypeOfTrip());
+			//System.out.println(legNo);
+			//System.out.println(bookRes.getTypeOfTrip());
 			if( legNo!=0&&bookRes.getTypeOfTrip().contentEquals("oneway")) {
 				boolean b1=st.execute("INSERT INTO Reservation VALUES ("+resNo+",NOW(),100, 1000, NULL,"+accNo+");");
 				boolean b2=st.execute("INSERT INTO Includes VALUES ("+resNo+", \'"+bookRes.getAirlineID()+"\',"+bookRes.getFlightNum1()+", "
@@ -68,7 +68,7 @@ public class BookReservationDao {
 		return "failure";
 		
 	}
-	
+	//works
 	public String bookMultiCityReservation(BookReservation bookRes) {
 		
 		/*
@@ -80,8 +80,38 @@ public class BookReservationDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database deletion and return "success" or "failure" based on result of the database deletion.
 		 */
-		System.out.println("wrong one");			
-		return "success";
+		try {
+			String depDate=reformatDate(bookRes.getTrip1Date());
+			Statement st=Connections.generateStatement();
+			ResultSet rs=st.executeQuery("SELECT MAX(ResrNo) FROM Reservation");
+			rs.next();
+			int resNo=rs.getInt(1)+1;
+			//System.out.println("ResNo="+resNo);
+			rs=st.executeQuery("SELECT C.accountNo, P.Id FROM Customer C, PERSON P "
+					+ "WHERE P.Id=C.Id AND P.Email=\'"+bookRes.getPassEmail()+"\';");
+			rs.next();
+			int accNo=rs.getInt(1);
+			int id=rs.getInt(2);
+			//System.out.println("accNo "+accNo);//works up to here
+			int legNo=getLegNo(bookRes.getArrivalAirport1(),bookRes.getDepartureAirport1(),bookRes.getFlightNum1(),bookRes.getAirlineID());
+			int legNo2=getLegNo(bookRes.getArrivalAirport2(),bookRes.getDepartureAirport2(),bookRes.getFlightNum2(),bookRes.getAirlineID());
+			if(legNo!=0 && legNo2!=0 ) {
+				boolean b1=st.execute("INSERT INTO Reservation VALUES ("+resNo+",NOW(),70, 700, NULL,"+accNo+");");
+				boolean b2=st.execute("INSERT INTO Includes VALUES ("+resNo+", \'"+bookRes.getAirlineID()+"\',"+bookRes.getFlightNum1()+", "
+						+legNo+", \'"+ depDate+"\');");
+				boolean b3=st.execute("INSERT INTO Includes VALUES ("+resNo+", \'"+bookRes.getAirlineID()+"\',"+bookRes.getFlightNum2()+", "
+						+legNo2+", \'"+ reformatDate(bookRes.getTrip2Date())+"\');");
+				boolean b4=st.execute("INSERT INTO ReservationPassenger VALUES("+resNo+", "+id+ ", "+ accNo+", \'"+bookRes.getSeatNum()+"\', \'"
+								+ bookRes.getSeatClass()+"\' , \'"+bookRes.getMealPref()+"\');");
+				if(b1 && b2 && b3 && b4) {
+					return "success";
+				}
+			}
+			
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		return "failure";
 		
 	}
 	private int getLegNo(String arrAirport, String depAirport, int flightNo, String airlineId) {
@@ -91,18 +121,17 @@ public class BookReservationDao {
 					+ "AND DepAirportID=\'"+depAirport+"\' AND ArrAirportID=\'"+arrAirport+"\';";
 			ResultSet rs=st.executeQuery(sql);
 			rs.next();
-			System.out.println(sql);
+			//System.out.println(sql);
 			return rs.getInt(1);
 		}catch(Exception e) {
-			System.out.println(e);
+			//System.out.println(e);
 		}
-		System.out.println("failed");
 		return 0;
 	}
 	private String reformatDate(String date) {
-		System.out.println(date);
+		//System.out.println(date);
 		String finalDate=date.substring(6)+"-"+date.substring(0,2)+"-"+date.substring(3,5);
-		System.out.println(finalDate);
+		//System.out.println(finalDate);
 		return finalDate;
 	}
 }

@@ -68,7 +68,7 @@ public class BookReservationDao {
 		return "failure";
 		
 	}
-	//works
+	//works and tested
 	public String bookMultiCityReservation(BookReservation bookRes) {
 		
 		/*

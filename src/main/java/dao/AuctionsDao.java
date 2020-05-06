@@ -1,8 +1,12 @@
 package dao;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.*;
 
 import model.Auctions;
+import model.Customer;
+
+import java.util.regex.*;
 
 public class AuctionsDao {
 	
@@ -16,15 +20,28 @@ public class AuctionsDao {
 		 */
 		List<Auctions> auctions = new ArrayList<Auctions>();
 		/*Sample data begins*/
-		Auctions auction = new Auctions();
-		auction.setAccountNo(AccountNo);
-		auction.setAirlineID(AirlineID);
-		auction.setFlightNo(FlightNo);
-		auction.setSeatClass(SeatClass);
-		auction.setAccepted(true);
-		auction.setDate("2019-01-01");
-		auction.setNYOP(500);
-		auctions.add(auction);
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("SELECT A.AccountNo , A.AirlineID, A.FlightNo, A.Class," +
+					" A.Accepted, A.Date,  A.NYOP" + 
+					" FROM Auctions A"+
+					"WHERE Date IN (SELECT max(Dates) FROM A)"); //query to fetch latest bid 
+			while(rs.next()) {
+				Auctions auction = new Auctions();
+				auction.setAccountNo(rs.getInt("AccountNo"));
+				auction.setAirlineID(rs.getString("AirlineID"));
+				auction.setFlightNo(rs.getInt("FlightNo"));
+				auction.setSeatClass(rs.getString("Class"));
+				auction.setAccepted(rs.getBoolean("Accepted"));
+				auction.setDate(rs.getString("Date"));
+				auction.setNYOP(rs.getDouble("NYOP"));
+				auctions.add(auction);		
+			}
+		}
+			catch(Exception e) {
+				System.out.println(e);
+			}
+		
 		/*Sample data ends*/
 		
 		return auctions;
@@ -40,19 +57,28 @@ public class AuctionsDao {
 		List<Auctions> auctions = new ArrayList<Auctions>();
 			
 		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			Auctions auction = new Auctions();
-			auction.setAccountNo(AccountNo);
-			auction.setAirlineID(AirlineID);
-			auction.setFlightNo(FlightNo);
-			auction.setSeatClass(SeatClass);
-			auction.setAccepted(true);
-			auction.setDate("2019-01-01");
-			auction.setNYOP(500);
-	
-			auctions.add(auction);
-				
+		try {
+			Statement st = Connections.generateStatement();	
+			ResultSet rs = st.executeQuery("SELECT A.AccountNo , A.AirlineID, A.FlightNo, A.Class" +
+					" A.Accepted, A.Date,  A.NYOP" + 
+					" FROM Auctions A"); // query to fetch all bids
+			
+			while(rs.next()) {
+				Auctions auction = new Auctions();
+				auction.setAccountNo(rs.getInt("AccountNo"));
+				auction.setAirlineID(rs.getString("AirlineID"));
+				auction.setFlightNo(rs.getInt("FlightNo"));
+				auction.setSeatClass(rs.getString("Class"));
+				auction.setAccepted(rs.getBoolean("Accepted"));
+				auction.setDate(rs.getString("Date"));
+				auction.setNYOP(rs.getDouble("NYOP"));
+				auctions.add(auction);		
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
 		}
+
 		/*Sample data ends*/
 						
 		return auctions;

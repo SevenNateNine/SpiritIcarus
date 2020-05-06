@@ -2,6 +2,8 @@ package dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import model.Itinerary;
 
@@ -13,19 +15,30 @@ public class ItineraryDao {
 			 */
 		
 			List<Itinerary> its = new ArrayList<Itinerary>();
-			
-			for (int i = 0; i < 5; i++) {
-				Itinerary it = new Itinerary();
-				it.setAirlineID("AA");
-				it.setArrival("JFK");
-				it.setDeparture("TNR");
-				it.setArrTime("2011-01-13 23:00:00");
-				it.setDepTime("2011-01-13 06:55:00");
-				it.setFlightNo(111);
-				it.setResrNo(resrNo);
+			try {		
+				Statement st = Connections.generateStatement();
+				ResultSet rs = st.executeQuery("SELECT l.AirlineID, l.FlightNo, l.LegNo, l.DepAirportId, l.ArrAirportId, cast(concat(i.Date,' ',TIME(l.DepTime)) AS Datetime) AS DepartingTime,"+
+						  "ADDDATE(cast(concat(i.Date,' ',TIME(l.DepTime)) AS Datetime),TIME(DATEDIFF(l.ArrTime,l.DepTime))) AS ArrivingTime"+
+						  "FROM Leg l, Includes i"+
+						 " WHERE i.AirlineID=l.AirlineID AND i.FlightNo=l.FlightNo AND i.LegNo=l.LegNo AND i.ResrNo=?resrNo"+
+						 " ORDER BY DepTime");
 				
-				its.add(it);			
+				while(rs.next()) {
+					Itinerary it = new Itinerary();
+					it.setAirlineID(rs.getString("AirlineID"));
+					it.setArrival(rs.getString("Arrival"));
+					it.setDeparture(rs.getString("Departure"));
+					it.setArrTime(rs.getString("ArrTime"));
+					it.setDepTime(rs.getString("DepTime"));
+					it.setFlightNo(rs.getInt("FlightNo"));
+					
+					its.add(it);
+				}	
+			} 
+			catch (Exception e) {
+				System.out.println(e);
 			}
+			
 			/*Sample data ends*/
 			
 			return its;

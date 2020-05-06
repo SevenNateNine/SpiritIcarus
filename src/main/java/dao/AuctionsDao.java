@@ -22,10 +22,10 @@ public class AuctionsDao {
 		/*Sample data begins*/
 		try {
 			Statement st = Connections.generateStatement();	
-			ResultSet rs = st.executeQuery("SELECT A.AccountNo , A.AirlineID, A.FlightNo, A.Class," +
-					" A.Accepted, A.Date,  A.NYOP" + 
+			ResultSet rs = st.executeQuery("SELECT A.AccountNo, A.AirlineID, A.FlightNo, A.Class," +
+					" A.Accepted, A.Date, A.NYOP" + 
 					" FROM Auctions A"+
-					"WHERE Date IN (SELECT max(Dates) FROM A)"); //query to fetch latest bid 
+					" WHERE Date IN (SELECT max(Date) FROM Auctions)"); //query to fetch latest bid 
 			while(rs.next()) {
 				Auctions auction = new Auctions();
 				auction.setAccountNo(rs.getInt("AccountNo"));
@@ -59,8 +59,8 @@ public class AuctionsDao {
 		/*Sample data begins*/
 		try {
 			Statement st = Connections.generateStatement();	
-			ResultSet rs = st.executeQuery("SELECT A.AccountNo , A.AirlineID, A.FlightNo, A.Class" +
-					" A.Accepted, A.Date,  A.NYOP" + 
+			ResultSet rs = st.executeQuery("SELECT A.AccountNo, A.AirlineID, A.FlightNo, A.Class," +
+					" A.Accepted, A.Date, A.NYOP" + 
 					" FROM Auctions A"); // query to fetch all bids
 			
 			while(rs.next()) {
